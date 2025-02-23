@@ -1,5 +1,5 @@
 cc = gcc
-exe = sukudu
+exe = suduku
 SRC = $(wildcard *.c)
 OBJ = $(SRC:.c=.o)
 
@@ -10,3 +10,8 @@ all : $(exe)
 
 $(exe) : $(OBJ)
 	$(cc) -o $@ $^
+
+clean :
+	rm -f $(OBJ)
+
+.PHONY: all clean
