@@ -1,5 +1,6 @@
 /*
-    c'est dans ce fichier que toute les structures utile pour le programme sont creer
+    c'est dans ce fichier que toute les structures utile pour le programme sont creer 
+    je parle des structures et des variable globale 
 */
 
 #ifndef MAIN_H_INCLUDED
