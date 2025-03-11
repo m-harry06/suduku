@@ -16,7 +16,7 @@ void menu_acceuil(){
     printf("\n \t \t \t \t  *** Menu principal *** \n ");
     printf("-----------------------------------------------------------------------------\n");
     printf("\n\t faites un choix \n");
-    printf (" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Contacter un aministrateur \n");
+    printf (" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n |Contacter un administrateur\n");
     
 }
 
@@ -29,6 +29,9 @@ void gerer_menu_acceuil(int choix){
             addNewPlayers();
             break;
         case 3:
+            
+            break;
+        case 4:
             contact_admin_menu();
             break;
         default:
