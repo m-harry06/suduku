@@ -63,7 +63,7 @@ L'application comportera les fonctionalités suivantes:
 
 1.  Bamou	            Devellopement du module  generation.c
 
-2.  Grac	            Implementation du solver dans Resolution.c
+2.  Grag	            Implementation du solver dans Resolution.c
 
 3.  Mbengmo	            Verification des mouvements et des entres de l’utilisateurverification.c 
 
