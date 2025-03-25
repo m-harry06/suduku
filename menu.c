@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "main.h"
 #include "auth.h"
+#include "generer.h"
 
 char username[20];
 
@@ -16,27 +17,35 @@ void menu_acceuil(){
     printf("\n \t \t \t \t  *** Menu principal *** \n ");
     printf("-----------------------------------------------------------------------------\n");
     printf("\n\t faites un choix \n");
-    printf (" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n |Contacter un administrateur\n");
+    printf (" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n \t \t |4.Contacter un administrateur\n \t \t |5.Quitter\n");
     
 }
 
-void gerer_menu_acceuil(int choix){
+int gerer_menu_acceuil(int choix){
     switch (choix){
         case 1:
             connecter_menu();
             break;
+
         case 2:
             addNewPlayers();
             break;
+
         case 3:
             
             break;
+
         case 4:
             contact_admin_menu();
             break;
+
+        case 5:
+            return 0;
+
         default:
             menu_acceuil();
             break;
+
     }
 }
 
@@ -140,6 +149,7 @@ void addNewPlayers() {
             while (getchar() != '\n'); 
         }
     } while (a != 1);
+    main();
 }
 
 
@@ -200,5 +210,20 @@ void menu_niveau(){
 }
 
 void gerer_menu_niveau(int choix){
-
+    switch (choix)
+    {
+    case 1:
+        niveau_facile();
+        break;
+    case 2:
+        
+        break;
+    case 3:
+        
+        break;
+    default:
+        printf("choix incorrect");
+        //return menu_niveau;
+        break;
+    }
 }

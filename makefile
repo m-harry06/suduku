@@ -12,6 +12,5 @@ $(exe) : $(OBJ)
 	$(cc) -o $@ $^
 
 clean :
-	rm -f $(OBJ)
-
+	del /S /Q *.o
 .PHONY: all clean

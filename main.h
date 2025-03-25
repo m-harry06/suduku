@@ -17,5 +17,6 @@ typedef struct Utilisateur
     char password[20];
 }Utilisateur;
 
+int main();
 
 #endif

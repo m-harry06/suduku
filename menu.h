@@ -2,7 +2,7 @@
 #define MENU_H_INCLUDED
 
 void menu_acceuil();
-void gerer_menu_acceuil(int choix);
+int gerer_menu_acceuil(int choix);
 void connecter_menu();
 void addNewPlayers();
 void contact_admin_menu();

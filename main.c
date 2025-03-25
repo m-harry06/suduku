@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "menu.h"
+#include "main.h"
 
 int main(){
 
@@ -8,6 +9,7 @@ int main(){
 
     int user_choice_acceuil;
     int user_choice_niveau;
+    char grille[9][9];
 
     menu_acceuil();
     printf("\n");
@@ -19,7 +21,8 @@ int main(){
     printf("votre choix: ");
     scanf("%d", &user_choice_niveau);
     gerer_menu_niveau(user_choice_niveau);
-
     
+
+    goto accueil;
     return 0;
 }
