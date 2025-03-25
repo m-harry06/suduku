@@ -39,7 +39,7 @@ int gerer_menu_acceuil(int choix) {
             break;
 
         case 5:
-            exit;
+            exit(0);
             return 0;
 
         default:
