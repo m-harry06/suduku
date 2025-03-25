@@ -5,24 +5,23 @@
 #include "menu.h"
 #include "main.h"
 #include "auth.h"
-#include "generer.h"
+#include "generer.h" // Assurez-vous d'inclure ce fichier d'en-tête
+
 
 char username[20];
 
-void menu_acceuil(){
-
+void menu_acceuil() {
     system("cls");
 
     printf("-----------------------------------------------------------------------------\n");
     printf("\n \t \t \t \t  *** Menu principal *** \n ");
     printf("-----------------------------------------------------------------------------\n");
     printf("\n\t faites un choix \n");
-    printf (" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n \t \t |4.Contacter un administrateur\n \t \t |5.Quitter\n");
-    
+    printf(" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n \t \t |4.Contacter un administrateur\n \t \t |5.Quitter\n");
 }
 
-int gerer_menu_acceuil(int choix){
-    switch (choix){
+int gerer_menu_acceuil(int choix) {
+    switch (choix) {
         case 1:
             connecter_menu();
             break;
@@ -32,7 +31,7 @@ int gerer_menu_acceuil(int choix){
             break;
 
         case 3:
-            
+            // À implémenter
             break;
 
         case 4:
@@ -40,17 +39,17 @@ int gerer_menu_acceuil(int choix){
             break;
 
         case 5:
+            exit;
             return 0;
 
         default:
             menu_acceuil();
             break;
-
     }
+    return 1;
 }
 
-void contact_admin_menu(){
-
+void contact_admin_menu() {
     system("cls");
 
     printf("-----------------------------------------------------------------------------\n");
@@ -59,14 +58,11 @@ void contact_admin_menu(){
 
     printf(" \t Harry MBENGMO \n \t \t Tel: +237 6 96 56 46 38 \n \t \t mail: hmbengmo@gmail.com \n");
 
-
-    int b, y = 0;
-    do{
+    int b;
+    do {
         printf(" entrer 1 pour revenir au menu principal ");
         scanf("%d", &b);
-        y++;
-    }while( b != 1);
-
+    } while (b != 1);
 }
 
 int getLastId() {
@@ -90,9 +86,7 @@ int getLastId() {
     return lastId + 1;
 }
 
-
 void addNewPlayers() {
-
     system("cls");
 
     FILE *player_file = fopen("utilisateurs.csv", "a");
@@ -152,12 +146,8 @@ void addNewPlayers() {
     main();
 }
 
-
-
-void connecter_menu(){
-
+void connecter_menu() {
     reload:
-
     system("cls");
     int result = 0;
     char nom_utilisateur[20];
@@ -170,33 +160,33 @@ void connecter_menu(){
     printf("-----------------------------------------------------------------------------\n");
     printf(" \t entrer votre nom d'utilisateurs: ");
     getchar();
-    scanf("%[^\n]s", nom_utilisateur);
+    scanf("%19[^\n]", nom_utilisateur);
     printf(" \t entrer votre mot de passe: ");
 
-    while ((ch = getch()) != '\r') {
-
-        if(ch != '\b'){
-        password[i] = ch;
-        printf(".");
-        i++;
-        }else{
+    while ((ch = _getch()) != '\r') {
+        if (ch != '\b') {
+            password[i] = ch;
+            printf("*");
+            i++;
+        } else if (i > 0) {
             printf("\b \b");
             i--;
         }
     }
     password[i] = '\0';
 
-    if(authentification(nom_utilisateur, password)){
-        system ("cls");
-        memcpy(username, nom_utilisateur, sizeof(nom_utilisateur));
-    }else{
-        printf("echec de l'authentification");
+    if (authentification(nom_utilisateur, password)) {
+        system("cls");
+        strncpy(username, nom_utilisateur, sizeof(username) - 1);
+        username[sizeof(username) - 1] = '\0';
+    } else {
+        printf("\nechec de l'authentification\n");
+        system("pause");
         goto reload;
     }
 }
 
-void menu_niveau(){
-    
+void menu_niveau() {
     system("cls");
 
     printf("\t\t bienvenu : %s\n", username);
@@ -205,25 +195,22 @@ void menu_niveau(){
     printf("\n \t \t \t  *** CHOIX DE DIFICULTE *** \n ");
     printf("-----------------------------------------------------------------------------\n");
     printf("\n\t faites un choix \n");
-    printf (" \n \t \t |1.Facile \n \t \t |2.Moyen \n \t \t |3.Difficile \n");
-    
+    printf(" \n \t \t |1.Facile \n \t \t |2.Moyen \n \t \t |3.Difficile \n");
 }
 
-void gerer_menu_niveau(int choix){
-    switch (choix)
-    {
-    case 1:
-        niveau_facile();
-        break;
-    case 2:
-        
-        break;
-    case 3:
-        
-        break;
-    default:
-        printf("choix incorrect");
-        //return menu_niveau;
-        break;
+void gerer_menu_niveau(int choix) {
+    switch (choix) {
+        case 1:
+            niveau_facile();
+            break;
+        case 2:
+            // À implémenter
+            break;
+        case 3:
+            // À implémenter
+            break;
+        default:
+            printf("choix incorrect");
+            break;
     }
 }
