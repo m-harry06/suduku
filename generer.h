@@ -3,21 +3,16 @@
 
 #include <stdbool.h>
 
-#define GRID_SIZE 9
+#define N 9
 
-// Fonctions de gÃ©nÃ©ration et manipulation de grille
-void initialiser_grille(char grille[GRID_SIZE][GRID_SIZE]);
-bool est_valide(char grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, char num); // Fixed parameter type
-void generer_grille_valide(char grille[GRID_SIZE][GRID_SIZE]);
-//void afficher_grille(char grille[GRID_SIZE][GRID_SIZE]);
-bool est_complete(char grille[GRID_SIZE][GRID_SIZE]);
-
-// Fonction de jeu
-void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]);
-
-// Niveaux de difficultÃ©
+void initialiser_grille(int grille[N][N]);
+int est_valide(int grille[N][N], int ligne, int colonne, int num);
+void generer_grille(int grille[N][N]);
+void afficher_grille(int grille[N][N]);
+int est_complete(int grille[N][N]);
+void clear_input_buffer();
+bool est_sauve(int grille[N][N], int ligne, int colonne, int num);
+void jouer_sudoku(int grille[N][N]);
 int niveau_facile();
-int niveau_moyen();
-int niveau_difficile();
 
-#endif
+#endif // GENERER_H
