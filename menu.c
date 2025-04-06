@@ -6,10 +6,12 @@
 #include "menu.h"
 #include "main.h"
 #include "auth.h"
-#include "generer.h" // Assurez-vous d'inclure ce fichier d'en-tête
+#include "generer.h"
 #include "affichageCentrer.h"
+#include "sauvegarde.h"
 
-char username[20];
+
+//char username[20];
 
 void afficherLigneSeparation() {
     afficherCentre("-----------------------------------------------------------------------------\n");
@@ -122,21 +124,42 @@ void contact_admin_menu() {
     afficherRetourMenuPrincipal();
 }
 
-int getLastId() {
-    FILE *player_file = fopen("utilisateurs.csv", "r");
-    int lastId = 0;
+int getLastId(const char *filename) {
+    // Vérification du paramètre filename
+    if (filename == NULL || strlen(filename) == 0) {
+        fprintf(stderr, "Erreur: Nom de fichier invalide\n");
+        return 1; // Retourne 1 comme ID par défaut
+    }
 
+    FILE *player_file = fopen(filename, "r");
     if (player_file == NULL) {
+        // Fichier inexistant, on retourne le premier ID
         return 1;
     }
 
-    char line[200];
+    int lastId = 0;
+    char line[256]; // Taille augmentée pour plus de sécurité
+
     while (fgets(line, sizeof(line), player_file)) {
-        if (strlen(line) > 1) {
-            int currentId;
-            sscanf(line, "%d,", &currentId);
-            lastId = currentId;
+        // Ignorer les lignes vides ou trop courtes
+        if (strlen(line) < 2) continue;
+        
+        // Extraire l'ID (suppose que l'ID est le premier champ avant une virgule)
+        int currentId;
+        if (sscanf(line, "%d,", &currentId) == 1) {
+            if (currentId > lastId) {
+                lastId = currentId;
+            }
+        } else {
+            fprintf(stderr, "Avertissement: Ligne mal formatee dans %s: %s", filename, line);
         }
+    }
+
+    // Gestion des erreurs de lecture
+    if (ferror(player_file)) {
+        fprintf(stderr, "Erreur de lecture du fichier %s\n", filename);
+        fclose(player_file);
+        return lastId + 1; // Retourne quand même une valeur plausible
     }
 
     fclose(player_file);
@@ -160,7 +183,7 @@ void addNewPlayers() {
     afficherCentre("Nouvel utilisateur");
     afficherLigneSeparation();
 
-    user.id = getLastId();
+    user.id = getLastId("utilisateurs.csv");
     afficherCentre("Entrer votre nom:");
     getchar();
     fgets(user.nom, sizeof(user.nom), stdin);
@@ -268,6 +291,7 @@ void afficherMenuNiveau(int choix) {
     afficherCentre(choix == 2 ? "-> 2. Moyen                                 " : "   2. Moyen                                 ");
     afficherCentre(choix == 3 ? "-> 3. Difficile                             " : "   3. Difficile                             ");
     afficherCentre(choix == 4 ? "-> 4. Charger une partie sauvegardée       " : "   4. Charger une partie sauvegardée       ");
+    afficherCentre(choix == 5 ? "-> 5. Retour au menu principal             " : "   5. Retour au menu principal             ");
     afficherLigneSeparation();
 }
 
@@ -284,7 +308,7 @@ void gerer_menu_niveau() {
             if (touche == 72 && choix > 1) { // Flèche haut
                 choix--;
                 afficherMenuNiveau(choix); // Mettre à jour uniquement les options
-            } else if (touche == 80 && choix < 4) { // Flèche bas
+            } else if (touche == 80 && choix < 5) { // Flèche bas
                 choix++;
                 afficherMenuNiveau(choix); // Mettre à jour uniquement les options
             }
@@ -313,9 +337,20 @@ void gerer_menu_niveau() {
                 system("pause");
             }
             break;
-        case 4:
-            afficherCentre("Chargement de la partie sauvegardée non implémenté.");
-            system("pause");
+        case 4: {
+            char grille[GRID_SIZE][GRID_SIZE];
+
+            chargerSudoku(grille, username) ;
+                afficherCentre("Chargement de la partie sauvegardée échoué.");
+                system("pause");
+                break;
+            
+
+            jouer_sudoku(grille);
+            break;
+        }
+        case 5:
+            gerer_menu_acceuil(); // Retour au menu principal
             break;
         default:
             afficherCentre("Choix incorrect");

@@ -8,6 +8,8 @@
 #include "generer.h"
 #include "resolution.h"
 #include "afficher.h"
+#include "sauvegarde.h"
+#include "main.h" // Include to access the global username variable
 
 #define GRID_SIZE 9
 #define MAX_ATTEMPTS 1000
@@ -136,6 +138,7 @@ void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]) {
         printf("Entrer un chiffre (1-9) - Remplir la case\n");
         printf("S - Résoudre le Sudoku\n");
         printf("R - Supprimer un nombre rouge\n");
+        printf("G - Sauvegarder la partie\n");
         printf("Q - Quitter\n");
         printf("Votre choix: ");
         action = getch();
@@ -174,6 +177,10 @@ void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]) {
                 } else {
                     printf("Impossible de résoudre la grille.\n");
                 }
+                break;
+            case 'G': case 'g':
+                sauvegarderSudoku(grille, username); // Use the global username variable
+                Sleep(1000);  // Pause briefly to confirm save
                 break;
             case 'Q': return;
         }
