@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define N 9
+#define GRID_SIZE 9
 
-bool est_sauve(int grille[N][N], int ligne, int colonne, int num) {
+bool est_sauve(int grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, int num) {
     // Vérification ligne et colonne optimisée
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < GRID_SIZE; i++) {
         if (grille[ligne][i] == num) return false;
         if (grille[i][colonne] == num) return false;
     }
@@ -24,12 +24,12 @@ bool est_sauve(int grille[N][N], int ligne, int colonne, int num) {
     return true;
 }
 
-bool resoudre_sudoku(int grille[N][N], int position) {
+bool resoudre_sudoku(int grille[GRID_SIZE][GRID_SIZE], int position) {
     // Nouvelle approche : parcours linéaire de 0 à 80
-    if (position >= N*N) return true;
+    if (position >= GRID_SIZE * GRID_SIZE) return true;
     
-    int ligne = position / N;
-    int colonne = position % N;
+    int ligne = position / GRID_SIZE;
+    int colonne = position % GRID_SIZE;
 
     // Case déjà remplie -> passer à la suivante
     if (grille[ligne][colonne] != 0) {
@@ -37,7 +37,7 @@ bool resoudre_sudoku(int grille[N][N], int position) {
     }
 
     // Essai systématique des valeurs 1-9
-    for (int num = 1; num <= N; num++) {
+    for (int num = 1; num <= GRID_SIZE; num++) {
         if (est_sauve(grille, ligne, colonne, num)) {
             grille[ligne][colonne] = num;
             
@@ -53,6 +53,6 @@ bool resoudre_sudoku(int grille[N][N], int position) {
 }
 
 /* Version d'appel simplifiée */
-bool resoudre_sudoku_entree(int grille[N][N]) {
+bool resoudre_sudoku_entree(int grille[GRID_SIZE][GRID_SIZE]) {
     return resoudre_sudoku(grille, 0);
 }

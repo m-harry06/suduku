@@ -2,67 +2,124 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <locale.h>
 #include "menu.h"
 #include "main.h"
 #include "auth.h"
 #include "generer.h" // Assurez-vous d'inclure ce fichier d'en-tête
-
+#include "affichageCentrer.h"
 
 char username[20];
 
-void menu_acceuil() {
-    system("cls");
-
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\n \t \t \t \t  *** Menu principal *** \n ");
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\n\t faites un choix \n");
-    printf(" \n \t \t |1.Connectez vous a votre espace personnel \n \t \t |2.Creer un compte \n \t \t |3.Sdoku resolver\n \t \t |4.Contacter un administrateur\n \t \t |5.Quitter\n");
+void afficherLigneSeparation() {
+    afficherCentre("-----------------------------------------------------------------------------\n");
 }
 
-int gerer_menu_acceuil(int choix) {
+void afficherRetourMenuPrincipal() {
+    int choix;
+    do {
+        afficherCentre("Entrer 1 pour revenir au menu principal");
+        if (scanf("%d", &choix) != 1) {
+            while (getchar() != '\n'); // Nettoyer le buffer
+        }
+    } while (choix != 1);
+}
+
+void masquerCurseur() {
+    printf("\033[?25l"); // Masque le curseur
+}
+
+void afficherCurseur() {
+    printf("\033[?25h"); // Affiche le curseur
+}
+
+void effacerEcran() {
+    printf("\033[H\033[J"); // Efface l'écran et repositionne le curseur en haut
+}
+
+void menu_acceuil() {
+    effacerEcran();
+
+    afficherLigneSeparation();
+    afficherCentre("*** Menu principal ***");
+    afficherLigneSeparation();
+    afficherCentre("Faites un choix");
+    afficherCentre("| 1. Connectez vous a votre espace personnel  |");
+    afficherCentre("| 2. Creer un compte                          |");
+    afficherCentre("| 3. Sudoku resolver                          |");
+    afficherCentre("| 4. Contacter un administrateur              |");
+    afficherCentre("| 5. Quitter                                  |");
+    afficherLigneSeparation();
+}
+
+void afficherMenuPrincipal(int choix) {
+    effacerEcran();
+    afficherLigneSeparation();
+    afficherCentre("*** Menu principal ***");
+    afficherLigneSeparation();
+    afficherCentre("Utilisez les flèches pour naviguer et Entrée pour sélectionner:");
+    afficherCentre(choix == 1 ? "-> 1. Connectez vous a votre espace personnel  " : "   1. Connectez vous a votre espace personnel  ");
+    afficherCentre(choix == 2 ? "-> 2. Creer un compte                          " : "   2. Creer un compte                          ");
+    afficherCentre(choix == 3 ? "-> 3. Sudoku resolver                          " : "   3. Sudoku resolver                          ");
+    afficherCentre(choix == 4 ? "-> 4. Contacter un administrateur              " : "   4. Contacter un administrateur              ");
+    afficherCentre(choix == 5 ? "-> 5. Quitter                                  " : "   5. Quitter                                  ");
+    afficherLigneSeparation();
+}
+
+void gerer_menu_acceuil() {
+    int choix = 1; // Option par défaut
+    char touche;
+
+    masquerCurseur();
+    afficherMenuPrincipal(choix);
+    while (1) {
+        touche = _getch();
+        if (touche == -32) {
+            touche = _getch();
+            if (touche == 72 && choix > 1) {
+                choix--;
+                afficherMenuPrincipal(choix);
+            } else if (touche == 80 && choix < 5) {
+                choix++;
+                afficherMenuPrincipal(choix);
+            }
+        } else if (touche == '\r') {
+            break;
+        }
+    }
+    afficherCurseur();
+
     switch (choix) {
         case 1:
             connecter_menu();
             break;
-
         case 2:
             addNewPlayers();
             break;
-
         case 3:
-            // À implémenter
+            afficherCentre("Fonctionnalité Sudoku resolver non implémentée.");
+            system("pause");
             break;
-
         case 4:
             contact_admin_menu();
             break;
-
         case 5:
             exit(0);
-            return 0;
-
-        default:
-            menu_acceuil();
-            break;
     }
-    return 1;
 }
 
 void contact_admin_menu() {
-    system("cls");
+    effacerEcran();
 
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\t\t Contacter un administrateur \n");
-    printf("-----------------------------------------------------------------------------\n");
+    afficherLigneSeparation();
+    afficherCentre("Contacter un administrateur");
+    afficherLigneSeparation();
+    afficherCentre("| Nom : Harry MBENGMO                     |");
+    afficherCentre("| Tel : +237 6 96 56 46 38                |");
+    afficherCentre("| Mail: hmbengmo@gmail.com                |");
+    afficherLigneSeparation();
 
-    printf(" \t Harry MBENGMO \n \t \t Tel: +237 6 96 56 46 38 \n \t \t mail: hmbengmo@gmail.com \n");
-
-    int b;
-    do {
-        printf(" entrer 1 pour revenir au menu principal ");
-        scanf("%d", &b);
-    } while (b != 1);
+    afficherRetourMenuPrincipal();
 }
 
 int getLastId() {
@@ -87,11 +144,11 @@ int getLastId() {
 }
 
 void addNewPlayers() {
-    system("cls");
+    effacerEcran();
 
     FILE *player_file = fopen("utilisateurs.csv", "a");
     if (player_file == NULL) {
-        printf("Erreur lors de l'ouverture du fichier\n");
+        afficherCentre("Erreur lors de l'ouverture du fichier");
         return;
     }
 
@@ -99,33 +156,32 @@ void addNewPlayers() {
     char ch;
     int i = 0;
 
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\t\t Nouvel utilisateur \n");
-    printf("-----------------------------------------------------------------------------\n");
+    afficherLigneSeparation();
+    afficherCentre("Nouvel utilisateur");
+    afficherLigneSeparation();
 
     user.id = getLastId();
-    printf("Entrer votre nom: ");
+    afficherCentre("Entrer votre nom:");
     getchar();
-    fgets(user.nom, 20, stdin);
-    user.nom[strcspn(user.nom, "\n")] = 0;  
+    fgets(user.nom, sizeof(user.nom), stdin);
+    user.nom[strcspn(user.nom, "\n")] = 0;
 
-    printf("Entrer votre prenom: ");
-    fgets(user.prenom, 20, stdin);
+    afficherCentre("Entrer votre prenom:");
+    fgets(user.prenom, sizeof(user.prenom), stdin);
     user.prenom[strcspn(user.prenom, "\n")] = 0;
 
-    printf("Entrer votre pseudo: ");
-    fgets(user.nom_utilisateur, 20, stdin);
+    afficherCentre("Entrer votre pseudo:");
+    fgets(user.nom_utilisateur, sizeof(user.nom_utilisateur), stdin);
     user.nom_utilisateur[strcspn(user.nom_utilisateur, "\n")] = 0;
 
-    printf("Entrer votre mot de passe: ");
-
-    while ((ch = _getch()) != '\r') {  
-        if (ch == '\b' && i > 0) {  
+    afficherCentre("Entrer votre mot de passe:");
+    while ((ch = _getch()) != '\r') {
+        if (ch == '\b' && i > 0) {
             printf("\b \b");
             i--;
         } else if (ch != '\b' && i < (sizeof(user.password) - 1)) {
             user.password[i] = ch;
-            printf("*");  
+            printf("*");
             i++;
         }
     }
@@ -136,81 +192,131 @@ void addNewPlayers() {
 
     fclose(player_file);
 
-    int a;
-    do {
-        printf("Entrer 1 pour revenir au menu principal et connectez vous: ");
-        if (scanf("%d", &a) != 1) {
-            while (getchar() != '\n'); 
-        }
-    } while (a != 1);
-    main();
+    afficherRetourMenuPrincipal();
+    gerer_menu_acceuil(); // Retour au menu principal
 }
 
 void connecter_menu() {
-    reload:
-    system("cls");
-    int result = 0;
-    char nom_utilisateur[20];
-    char password[20];
-    char ch;
-    int i = 0;
+    while (1) {
+        effacerEcran();
+        int result = 0;
+        char nom_utilisateur[20];
+        char password[20];
+        char ch;
+        int i = 0;
 
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\t\t connectez vous a votre espace personel \n");
-    printf("-----------------------------------------------------------------------------\n");
-    printf(" \t entrer votre nom d'utilisateurs: ");
-    getchar();
-    scanf("%19[^\n]", nom_utilisateur);
-    printf(" \t entrer votre mot de passe: ");
+        afficherLigneSeparation();
+        afficherCentre("Connectez vous a votre espace personel");
+        afficherLigneSeparation();
+        afficherCentre("Entrer votre nom d'utilisateurs:");
+        getchar();
+        scanf("%19[^\n]", nom_utilisateur);
+        afficherCentre("Entrer votre mot de passe:");
 
-    while ((ch = _getch()) != '\r') {
-        if (ch != '\b') {
-            password[i] = ch;
-            printf("*");
-            i++;
-        } else if (i > 0) {
-            printf("\b \b");
-            i--;
+        while ((ch = _getch()) != '\r') {
+            if (ch == '\b' && i > 0) {
+                printf("\b \b");
+                i--;
+            } else if (ch != '\b' && i < (sizeof(password) - 1)) {
+                password[i] = ch;
+                printf("*");
+                i++;
+            }
         }
-    }
-    password[i] = '\0';
+        password[i] = '\0';
 
-    if (authentification(nom_utilisateur, password)) {
-        system("cls");
-        strncpy(username, nom_utilisateur, sizeof(username) - 1);
-        username[sizeof(username) - 1] = '\0';
-    } else {
-        printf("\nechec de l'authentification\n");
-        system("pause");
-        goto reload;
+        if (authentification(nom_utilisateur, password)) {
+            effacerEcran();
+            strncpy(username, nom_utilisateur, sizeof(username) - 1);
+            username[sizeof(username) - 1] = '\0';
+            break;
+        } else {
+            afficherCentre("Echec de l'authentification");
+            system("pause");
+        }
     }
 }
 
 void menu_niveau() {
-    system("cls");
+    effacerEcran();
 
-    printf("\t\t bienvenu : %s\n", username);
+    afficherCentre("Bienvenu:");
+    afficherCentre(username);
 
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\n \t \t \t  *** CHOIX DE DIFICULTE *** \n ");
-    printf("-----------------------------------------------------------------------------\n");
-    printf("\n\t faites un choix \n");
-    printf(" \n \t \t |1.Facile \n \t \t |2.Moyen \n \t \t |3.Difficile \n");
+    afficherLigneSeparation();
+    afficherCentre("*** CHOIX DE DIFFICULTE ***");
+    afficherLigneSeparation();
+    afficherCentre("Faites un choix");
+    afficherCentre("| 1. Facile                                |");
+    afficherCentre("| 2. Moyen                                 |");
+    afficherCentre("| 3. Difficile                             |");
+    afficherCentre("| 4. charger une partie sauvegarder        |");
+    afficherLigneSeparation();
 }
 
-void gerer_menu_niveau(int choix) {
+void afficherMenuNiveau(int choix) {
+    effacerEcran();
+    afficherCentre("Bienvenu:");
+    afficherCentre(username);
+    afficherLigneSeparation();
+    afficherCentre("*** CHOIX DE DIFFICULTE ***");
+    afficherLigneSeparation();
+    afficherCentre("Utilisez les flèches pour naviguer et Entrée pour sélectionner:");
+    afficherCentre(choix == 1 ? "-> 1. Facile                                " : "   1. Facile                                ");
+    afficherCentre(choix == 2 ? "-> 2. Moyen                                 " : "   2. Moyen                                 ");
+    afficherCentre(choix == 3 ? "-> 3. Difficile                             " : "   3. Difficile                             ");
+    afficherCentre(choix == 4 ? "-> 4. Charger une partie sauvegardée       " : "   4. Charger une partie sauvegardée       ");
+    afficherLigneSeparation();
+}
+
+void gerer_menu_niveau() {
+    int choix = 1; // Option par défaut
+    char touche;
+
+    masquerCurseur(); // Masquer le curseur pour réduire les distractions
+    afficherMenuNiveau(choix); // Afficher le menu initial
+    while (1) {
+        touche = _getch();
+        if (touche == -32) { // Touche spéciale (flèches)
+            touche = _getch();
+            if (touche == 72 && choix > 1) { // Flèche haut
+                choix--;
+                afficherMenuNiveau(choix); // Mettre à jour uniquement les options
+            } else if (touche == 80 && choix < 4) { // Flèche bas
+                choix++;
+                afficherMenuNiveau(choix); // Mettre à jour uniquement les options
+            }
+        } else if (touche == '\r') { // Touche Entrée
+            break;
+        }
+    }
+    afficherCurseur(); // Réafficher le curseur avant de quitter la boucle
+
     switch (choix) {
         case 1:
-            niveau_facile();
+            if (niveau_facile() == -1) {
+                afficherCentre("Erreur: Impossible de jouer au niveau facile.");
+                system("pause");
+            }
             break;
         case 2:
-            // À implémenter
+            if (niveau_moyen() == -1) {
+                afficherCentre("Erreur: Impossible de jouer au niveau moyen.");
+                system("pause");
+            }
             break;
         case 3:
-            // À implémenter
+            if (niveau_difficile() == -1) {
+                afficherCentre("Erreur: Impossible de jouer au niveau difficile.");
+                system("pause");
+            }
+            break;
+        case 4:
+            afficherCentre("Chargement de la partie sauvegardée non implémenté.");
+            system("pause");
             break;
         default:
-            printf("choix incorrect");
+            afficherCentre("Choix incorrect");
             break;
     }
 }
