@@ -3,31 +3,33 @@
 #include <time.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <conio.h>
 #include "generer.h"
 #include "resolution.h"
+#include <windows.h>
+#include <locale.h>
+#include "afficher.h"
 
-/* Initialise une grille vide (remplie de 0) */
-void initialiser_grille(int grille[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            grille[i][j] = 0;
+#define GRID_SIZE 9
+
+/* Initialise une grille vide (remplie d'espaces) */
+void initialiser_grille(char grille[GRID_SIZE][GRID_SIZE]) {
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            grille[i][j] = ' ';
         }
     }
 }
 
 /* Vérifie si un nombre peut être placé à une position donnée */
-bool est_valide(int grille[N][N], int ligne, int colonne, int num) {
-    // Vérification de la ligne et colonne
-    for (int i = 0; i < N; i++) {
+bool est_valide(char grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, char num) {
+    for (int i = 0; i < GRID_SIZE; i++) {
         if (grille[ligne][i] == num || grille[i][colonne] == num) {
             return false;
         }
     }
-
-    // Vérification du bloc 3x3
     int bloc_ligne = ligne - ligne % 3;
     int bloc_colonne = colonne - colonne % 3;
-    
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (grille[bloc_ligne + i][bloc_colonne + j] == num) {
@@ -39,18 +41,18 @@ bool est_valide(int grille[N][N], int ligne, int colonne, int num) {
 }
 
 /* Génère une grille valide et résoluble */
-void generer_grille_valide(int grille[N][N]) {
+void generer_grille_valide(char grille[GRID_SIZE][GRID_SIZE]) {
     initialiser_grille(grille);
-    srand(time(0));
+    srand((unsigned int)time(0)); // Initialiser le générateur de nombres aléatoires
 
     // Étape 1: Remplir les blocs diagonaux (indépendants)
     for (int bloc = 0; bloc < 3; bloc++) {
-        int nombres[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        char nombres[9] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         
         // Mélanger aléatoirement les nombres
         for (int i = 0; i < 9; i++) {
             int j = rand() % 9;
-            int temp = nombres[i];
+            char temp = nombres[i];
             nombres[i] = nombres[j];
             nombres[j] = temp;
         }
@@ -64,51 +66,26 @@ void generer_grille_valide(int grille[N][N]) {
     }
 
     // Étape 2: Résoudre complètement la grille
-    resoudre_sudoku_entree(grille);
-
-    // Étape 3: Enlever des nombres pour créer le puzzle
-    int cases_vides = N*N - 40; // Niveau facile: 40 cases remplies
-    while (cases_vides > 0) {
-        int ligne = rand() % N;
-        int colonne = rand() % N;
-        
-        if (grille[ligne][colonne] != 0) {
-            grille[ligne][colonne] = 0;
-            cases_vides--;
-        }
+    if (!resoudre_sudoku_entree(grille)) {
+        fprintf(stderr, "Erreur: Impossible de résoudre la grille générée.\n");
+        return; // Ne pas arrêter brutalement le programme
     }
 }
 
-/* Affiche la grille dans la console */
-void afficher_grille(int grille[N][N]) {
-    printf("\n\n      1   2   3    4   5   6    7   8   9\n");
-    printf("    +---+---+---+ +---+---+---+ +---+---+---+\n");
-    
-    for (int i = 0; i < N; i++) {
-        printf("%d   |", i+1);
-        for (int j = 0; j < N; j++) {
-            if (grille[i][j] == 0) {
-                printf("   |");
-            } else {
-                printf(" %d |", grille[i][j]);
-            }
-            if (j == 2 || j == 5) printf(" |");
-        }
-        printf("\n");
-        if (i == 2 || i == 5) {
-            printf("    ++===+===+===++===+===+===++===+===+===++\n");
-        } else {
-            printf("    +---+---+---+ +---+---+---+ +---+---+---+\n");
-        }
-    }
-    printf("\n");
+/* Fonction pour nettoyer le terminal */
+void nettoyer_terminal() {
+    #ifdef _WIN32
+        system("cls"); // Commande pour Windows
+    #else
+        system("clear"); // Commande pour Unix/Linux
+    #endif
 }
 
-/* Vérifie si la grille est complètement remplie */
-bool est_complete(int grille[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (grille[i][j] == 0) {
+/* Vérifie si la grille est complète */
+bool est_complete(char grille[GRID_SIZE][GRID_SIZE]) {
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            if (grille[i][j] == ' ') {
                 return false;
             }
         }
@@ -117,90 +94,238 @@ bool est_complete(int grille[N][N]) {
 }
 
 /* Fonction principale de jeu */
-void jouer_sudoku(int grille[N][N]) {
-    int ligne, colonne, num;
-    char action;
-    
+void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]) {
+    int ligne = 0, colonne = 0; // Initial cursor position
+    char action, num;
+    bool is_user_input[GRID_SIZE][GRID_SIZE] = {false}; // Track user-entered numbers
+
     while (!est_complete(grille)) {
-        afficher_grille(grille);
-        
+        nettoyer_terminal(); // Clear the terminal before displaying the grid
+        afficher_grille(grille, is_user_input, ligne, colonne);
         printf("Menu:\n");
-        printf("R - Remplir une case\n");
-        printf("S - Resoudre le Sudoku\n");
+        printf("Flèches directionnelles - Déplacer le curseur\n");
+        printf("Entrer un chiffre (1-9) - Remplir la case\n");
+        printf("S - Résoudre le Sudoku\n");
         printf("Q - Quitter\n");
         printf("Votre choix: ");
-        scanf(" %c", &action);
-        action = toupper(action);
-        
-        switch(action) {
-            case 'R':
-                printf("\nEntrez la ligne (1-9), colonne (1-9) et nombre (1-9): ");
-                if (scanf("%d %d %d", &ligne, &colonne, &num) != 3) {
-                    printf("Saisie invalide.\n");
-                    while (getchar() != '\n'); // Vide le buffer
-                    continue;
-                }
-                
-                // Validation des entrées
-                if (ligne < 1 || ligne > 9 || colonne < 1 || colonne > 9 || num < 1 || num > 9) {
-                    printf("Valeurs invalides. Doit etre entre 1 et 9.\n");
-                    continue;
-                }
-                
-                // Gestion des cases déjà remplies
-                if (grille[ligne-1][colonne-1] != 0) {
-                    printf("Case deja remplie. Voulez-vous la modifier? (O/N): ");
+        action = getch(); // Lire une touche sans appuyer sur Entrée
+
+        switch (action) {
+            case 72: // Flèche haut
+                if (ligne > 0) ligne--;
+                break;
+            case 80: // Flèche bas
+                if (ligne < GRID_SIZE - 1) ligne++;
+                break;
+            case 75: // Flèche gauche
+                if (colonne > 0) colonne--;
+                break;
+            case 77: // Flèche droite
+                if (colonne < GRID_SIZE - 1) colonne++;
+                break;
+            case '1': case '2': case '3': case '4': case '5':
+            case '6': case '7': case '8': case '9':
+                num = action;
+                if (grille[ligne][colonne] != ' ') {
+                    printf("Case déjà remplie. Voulez-vous la modifier? (O/N): ");
                     char choix;
                     scanf(" %c", &choix);
                     if (toupper(choix) != 'O') {
                         continue;
                     }
                 }
-                
-                // Placement du nombre si valide
-                if (est_valide(grille, ligne-1, colonne-1, num)) {
-                    grille[ligne-1][colonne-1] = num;
-                    printf("Nombre place avec succes!\n");
+                if (est_valide(grille, ligne, colonne, num)) {
+                    grille[ligne][colonne] = num;
+                    is_user_input[ligne][colonne] = true; // Mark as user input
                 } else {
                     printf("Ce nombre n'est pas valide ici!\n");
                 }
                 break;
-                
-            case 'S':
-                printf("\nResolution du Sudoku en cours...\n");
+            case 'S': // Résoudre le Sudoku
+                nettoyer_terminal(); // Clear the terminal before solving
                 if (resoudre_sudoku_entree(grille)) {
-                    printf("Sudoku resolu avec succes!\n");
-                    afficher_grille(grille);
+                    printf("Sudoku résolu avec succès!\n");
+                    afficher_grille(grille, is_user_input, -1, -1); // No cursor after solving
                     system("pause");
-                    return;
                 } else {
-                    printf("Aucune solution trouvee pour cette grille.\n");
+                    printf("Impossible de résoudre cette grille.\n");
                 }
-                break;
-                
-            case 'Q':
-                printf("\nPartie terminee. Voici votre grille finale:\n");
-                afficher_grille(grille);
                 return;
-                
+            case 'Q': // Quitter
+                printf("Vous avez quitté le jeu.\n");
+                return;
             default:
                 printf("Option invalide.\n");
         }
     }
-    
-    printf("\nFelicitations! Vous avez complete le Sudoku!\n");
-    afficher_grille(grille);
+    nettoyer_terminal(); // Clear the terminal after completion
+    printf("\nFélicitations! Vous avez complété le Sudoku!\n");
+    afficher_grille(grille, is_user_input, -1, -1); // No cursor after completion
 }
 
 /* Point d'entrée pour le niveau facile */
 int niveau_facile() {
-    int grille[N][N];
-    
-    printf("\n=== Niveau Facile ===\n");
-    printf("Grille generee avec 40 cases remplies.\n\n");
-    
+    char grille[GRID_SIZE][GRID_SIZE];
+    char grille_joueur[GRID_SIZE][GRID_SIZE];
+    //printf("Génération de la grille pour le niveau facile...\n");
     generer_grille_valide(grille);
-    jouer_sudoku(grille);
-    
+
+    // Créer une copie avec des cases vides
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            grille_joueur[i][j] = grille[i][j];
+        }
+    }
+
+    // Supprimer des cases pour ne garder que 45-50 nombres (niveau facile)
+    int cases_a_supprimer = GRID_SIZE * GRID_SIZE - (45 + rand() % 6);
+    while (cases_a_supprimer > 0) {
+        int ligne = rand() % GRID_SIZE;
+        int colonne = rand() % GRID_SIZE;
+
+        if (grille_joueur[ligne][colonne] != ' ') {
+            grille_joueur[ligne][colonne] = ' ';
+            cases_a_supprimer--;
+        }
+    }
+
+    //printf("Grille générée pour le niveau facile :\n");
+    //afficher_grille(grille_joueur);
+
+    // Vérifier que la grille est résoluble
+    char grille_test[GRID_SIZE][GRID_SIZE];
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            grille_test[i][j] = grille_joueur[i][j];
+        }
+    }
+
+    if (!resoudre_sudoku_entree(grille_test)) {
+        printf("Erreur: Impossible de résoudre la grille générée pour le niveau facile.\n");
+        system("pause");
+        return -1;
+    }
+
+    jouer_sudoku(grille_joueur);
+    return 0;
+}
+
+/* Point d'entrée pour le niveau moyen */
+int niveau_moyen() {
+    char grille[GRID_SIZE][GRID_SIZE];
+    char grille_joueur[GRID_SIZE][GRID_SIZE]; // Copie pour le joueur
+    int tentative = 0;
+
+    do {
+        tentative++;
+        //printf("Tentative de génération pour le niveau moyen: %d\n", tentative);
+
+        generer_grille_valide(grille);
+        
+        // Créer une copie pour le joueur
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grille_joueur[i][j] = grille[i][j];
+            }
+        }
+
+        // Supprimer des cases pour ne garder que 30 nombres
+        int cases_a_supprimer = GRID_SIZE * GRID_SIZE - 30;
+        while (cases_a_supprimer > 0) {
+            int ligne = rand() % GRID_SIZE;
+            int colonne = rand() % GRID_SIZE;
+
+            if (grille_joueur[ligne][colonne] != ' ') {
+                grille_joueur[ligne][colonne] = ' ';
+                cases_a_supprimer--;
+            }
+        }
+
+        //printf("Grille pour le joueur :\n");
+        //afficher_grille(grille_joueur);
+
+        // Vérifier si la grille est résoluble
+        char grille_test[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grille_test[i][j] = grille_joueur[i][j];
+            }
+        }
+
+        if (resoudre_sudoku_entree(grille_test)) {
+            //printf("Grille valide trouvée :\n");
+            //afficher_grille(grille_joueur);
+            break;
+        }
+
+    } while (tentative < 100);
+
+    if (tentative >= 100) {
+        printf("Erreur: Impossible de générer une grille valide.\n");
+        system("pause");
+        return -1;
+    }
+
+    jouer_sudoku(grille_joueur);
+    return 0;
+}
+
+/* Point d'entrée pour le niveau difficile */
+int niveau_difficile() {
+    char grille[GRID_SIZE][GRID_SIZE];
+    char grille_joueur[GRID_SIZE][GRID_SIZE]; // Copie pour le joueur
+    int tentative = 0;
+
+    do {
+        tentative++;
+        //printf("Tentative de génération pour le niveau difficile: %d\n", tentative);
+
+        generer_grille_valide(grille);
+        
+        // Créer une copie pour le joueur
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grille_joueur[i][j] = grille[i][j];
+            }
+        }
+
+        // Supprimer des cases pour ne garder que 17 nombres
+        int cases_a_supprimer = GRID_SIZE * GRID_SIZE - 17;
+        while (cases_a_supprimer > 0) {
+            int ligne = rand() % GRID_SIZE;
+            int colonne = rand() % GRID_SIZE;
+
+            if (grille_joueur[ligne][colonne] != ' ') {
+                grille_joueur[ligne][colonne] = ' ';
+                cases_a_supprimer--;
+            }
+        }
+
+        //printf("Grille pour le joueur :\n");
+        //afficher_grille(grille_joueur);
+
+        // Vérifier si la grille est résoluble
+        char grille_test[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grille_test[i][j] = grille_joueur[i][j];
+            }
+        }
+
+        if (resoudre_sudoku_entree(grille_test)) {
+            //printf("Grille valide trouvée :\n");
+            //afficher_grille(grille_joueur);
+            break;
+        }
+
+    } while (tentative < 100);
+
+    if (tentative >= 100) {
+        printf("Erreur: Impossible de générer une grille valide.\n");
+        system("pause");
+        return -1;
+    }
+
+    jouer_sudoku(grille_joueur);
     return 0;
 }
