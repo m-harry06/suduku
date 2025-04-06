@@ -107,7 +107,7 @@ void chargerSudoku(char grille[9][9], const char *nomUtilisateur) {
         snprintf(message, sizeof(message), 
                 "Erreur: Format de sauvegarde invalide pour %s", nomUtilisateur);
         afficherCentre(message);
-        initialiser_grille(grille); // Réinitialiser la grille en cas d'erreur
+        //initialiser_grille(grille); // Réinitialiser la grille en cas d'erreur
     } else {
         snprintf(message, sizeof(message), 
                 "Grille chargée avec succès pour %s", nomUtilisateur);

@@ -6,6 +6,7 @@
 #ifndef MAIN_H_INCLUDED
 #define MAIN_H_INCLUDED
 
+/// @brief variable global
 extern char username[20];
 
 typedef struct Utilisateur

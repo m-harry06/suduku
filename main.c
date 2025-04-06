@@ -4,11 +4,12 @@
 #include "menu.h"
 #include "main.h"
 
+// Définition de la variable globale
+char username[20] = ""; // Initialisez avec une chaîne vide ou une valeur par défaut
+
 int main(){
 
     SetConsoleOutputCP(CP_UTF8);
-
-    accueil:
 
     int user_choice_acceuil;
     int user_choice_niveau;
@@ -16,6 +17,7 @@ int main(){
 
     
     gerer_menu_acceuil(user_choice_acceuil);
+    accueil:
     gerer_menu_niveau(user_choice_niveau);
     
 

@@ -6,7 +6,7 @@ void gerer_menu_acceuil();
 void connecter_menu();
 void addNewPlayers();
 void contact_admin_menu();
-int getLastId();
+int getLastId(const char *filename);
 void menu_niveau();
 void gerer_menu_niveau();
 

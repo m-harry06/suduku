@@ -1,6 +1,8 @@
 #ifndef GENERER_H
 #define GENERER_H
 
+#include "main.h" 
+
 #define GRID_SIZE 9
 
 void initialiser_grille(char grille[GRID_SIZE][GRID_SIZE]);

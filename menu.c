@@ -231,12 +231,17 @@ void connecter_menu() {
         afficherLigneSeparation();
         afficherCentre("Connectez vous a votre espace personel");
         afficherLigneSeparation();
-        afficherCentre("Entrer votre nom d'utilisateurs:");
+        afficherCentre("Entrer votre nom d'utilisateurs (ou tapez '0' pour revenir au menu principal):");
         getchar();
         scanf("%19[^\n]", nom_utilisateur);
         nom_utilisateur[strcspn(nom_utilisateur, "\r\n ")] = 0; // Nettoyer l'entrée utilisateur
-        afficherCentre("Entrer votre mot de passe:");
 
+        if (strcmp(nom_utilisateur, "0") == 0) {
+            gerer_menu_acceuil(); // Retour au menu principal
+            return;
+        }
+
+        afficherCentre("Entrer votre mot de passe:");
         while ((ch = _getch()) != '\r') {
             if (ch == '\b' && i > 0) {
                 printf("\b \b");
@@ -291,7 +296,7 @@ void afficherMenuNiveau(int choix) {
     afficherCentre(choix == 2 ? "-> 2. Moyen                                 " : "   2. Moyen                                 ");
     afficherCentre(choix == 3 ? "-> 3. Difficile                             " : "   3. Difficile                             ");
     afficherCentre(choix == 4 ? "-> 4. Charger une partie sauvegardée       " : "   4. Charger une partie sauvegardée       ");
-    afficherCentre(choix == 5 ? "-> 5. Retour au menu principal             " : "   5. Retour au menu principal             ");
+    afficherCentre(choix == 5 ? "-> 5. Retour au menu principal              " : "   5. Retour au menu principal              ");
     afficherLigneSeparation();
 }
 
@@ -341,11 +346,8 @@ void gerer_menu_niveau() {
             char grille[GRID_SIZE][GRID_SIZE];
 
             chargerSudoku(grille, username) ;
-                afficherCentre("Chargement de la partie sauvegardée échoué.");
-                system("pause");
-                break;
-            
-
+            afficherCentre("Chargement de la partie terminer.");
+            system("pause");
             jouer_sudoku(grille);
             break;
         }
