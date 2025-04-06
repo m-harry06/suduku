@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "menu.h"
 #include "main.h"
 
 int main(){
+
+    SetConsoleOutputCP(CP_UTF8);
 
     accueil:
 
@@ -11,15 +14,8 @@ int main(){
     int user_choice_niveau;
     char grille[9][9];
 
-    menu_acceuil();
-    printf("\n");
-    printf("votre choix: ");
-    scanf("%d", &user_choice_acceuil);
+    
     gerer_menu_acceuil(user_choice_acceuil);
-    printf("\n");
-    menu_niveau();
-    printf("votre choix: ");
-    scanf("%d", &user_choice_niveau);
     gerer_menu_niveau(user_choice_niveau);
     
 

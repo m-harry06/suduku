@@ -2,17 +2,19 @@
 #include <stdbool.h>
 
 #define GRID_SIZE 9
+#define MAX_RECURSION 1000
 
-bool est_sauve(int grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, int num) {
-    // Vérification ligne et colonne optimisée
+bool est_valide(char grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, char num) {
+    // Vérifie ligne et colonne
     for (int i = 0; i < GRID_SIZE; i++) {
-        if (grille[ligne][i] == num) return false;
-        if (grille[i][colonne] == num) return false;
+        if (grille[ligne][i] == num || grille[i][colonne] == num) {
+            return false;
+        }
     }
 
-    // Vérification bloc 3x3 plus précise
-    int bloc_ligne = (ligne / 3) * 3;
-    int bloc_colonne = (colonne / 3) * 3;
+    // Vérifie bloc 3x3
+    int bloc_ligne = ligne - ligne % 3;
+    int bloc_colonne = colonne - colonne % 3;
     
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -24,35 +26,50 @@ bool est_sauve(int grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, int num
     return true;
 }
 
-bool resoudre_sudoku(int grille[GRID_SIZE][GRID_SIZE], int position) {
-    // Nouvelle approche : parcours linéaire de 0 à 80
-    if (position >= GRID_SIZE * GRID_SIZE) return true;
-    
-    int ligne = position / GRID_SIZE;
-    int colonne = position % GRID_SIZE;
-
-    // Case déjà remplie -> passer à la suivante
-    if (grille[ligne][colonne] != 0) {
-        return resoudre_sudoku(grille, position + 1);
+bool resoudre_sudoku(char grille[GRID_SIZE][GRID_SIZE], int depth) {
+    if (depth > MAX_RECURSION) {
+        fprintf(stderr, "Profondeur maximale atteinte\n");
+        return false;
     }
 
-    // Essai systématique des valeurs 1-9
-    for (int num = 1; num <= GRID_SIZE; num++) {
-        if (est_sauve(grille, ligne, colonne, num)) {
-            grille[ligne][colonne] = num;
-            
-            if (resoudre_sudoku(grille, position + 1)) {
-                return true;
+    for (int ligne = 0; ligne < GRID_SIZE; ligne++) {
+        for (int colonne = 0; colonne < GRID_SIZE; colonne++) {
+            if (grille[ligne][colonne] == ' ') {
+                for (char num = '1'; num <= '9'; num++) {
+                    if (est_valide(grille, ligne, colonne, num)) {
+                        grille[ligne][colonne] = num;
+                        
+                        if (resoudre_sudoku(grille, depth + 1)) {
+                            return true;
+                        }
+                        
+                        grille[ligne][colonne] = ' ';
+                    }
+                }
+                return false;
             }
-            
-            // Backtrack
-            grille[ligne][colonne] = 0;
         }
     }
-    return false;
+    return true;
 }
 
-/* Version d'appel simplifiée */
-bool resoudre_sudoku_entree(int grille[GRID_SIZE][GRID_SIZE]) {
-    return resoudre_sudoku(grille, 0);
+bool resoudre_sudoku_entree(char grille[GRID_SIZE][GRID_SIZE]) {
+    char copie[GRID_SIZE][GRID_SIZE];
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            copie[i][j] = grille[i][j];
+        }
+    }
+
+    bool resolu = resoudre_sudoku(copie, 0);
+    
+    if (resolu) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                grille[i][j] = copie[i][j];
+            }
+        }
+    }
+    
+    return resolu;
 }

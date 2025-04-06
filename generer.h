@@ -1,21 +1,12 @@
-#ifndef GENERER_H_INCLUDED
-#define GENERER_H_INCLUDED
-
-#include <stdbool.h>
+#ifndef GENERER_H
+#define GENERER_H
 
 #define GRID_SIZE 9
 
-// Fonctions de génération et manipulation de grille
 void initialiser_grille(char grille[GRID_SIZE][GRID_SIZE]);
-bool est_valide(char grille[GRID_SIZE][GRID_SIZE], int ligne, int colonne, char num); // Fixed parameter type
 void generer_grille_valide(char grille[GRID_SIZE][GRID_SIZE]);
-//void afficher_grille(char grille[GRID_SIZE][GRID_SIZE]);
-bool est_complete(char grille[GRID_SIZE][GRID_SIZE]);
-
-// Fonction de jeu
+void copier_grille(char source[GRID_SIZE][GRID_SIZE], char destination[GRID_SIZE][GRID_SIZE]);
 void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]);
-
-// Niveaux de difficulté
 int niveau_facile();
 int niveau_moyen();
 int niveau_difficile();

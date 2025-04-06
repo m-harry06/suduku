@@ -211,6 +211,7 @@ void connecter_menu() {
         afficherCentre("Entrer votre nom d'utilisateurs:");
         getchar();
         scanf("%19[^\n]", nom_utilisateur);
+        nom_utilisateur[strcspn(nom_utilisateur, "\r\n ")] = 0; // Nettoyer l'entrée utilisateur
         afficherCentre("Entrer votre mot de passe:");
 
         while ((ch = _getch()) != '\r') {
@@ -224,6 +225,7 @@ void connecter_menu() {
             }
         }
         password[i] = '\0';
+        password[strcspn(password, "\r\n ")] = 0; // Nettoyer l'entrée utilisateur
 
         if (authentification(nom_utilisateur, password)) {
             effacerEcran();
