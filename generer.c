@@ -186,4 +186,5 @@ void jouer_sudoku(char grille[GRID_SIZE][GRID_SIZE]) {
         }
     }
     printf("Félicitations! Vous avez gagné!\n");
+    system("pause");
 }
