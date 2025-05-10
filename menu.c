@@ -3,12 +3,15 @@
 #include <string.h>
 #include <conio.h>
 #include <locale.h>
+
 #include "menu.h"
 #include "main.h"
 #include "auth.h"
 #include "generer.h"
 #include "affichageCentrer.h"
 #include "sauvegarde.h"
+#include "afficher.h"
+
 
 
 //char username[20];
@@ -40,6 +43,7 @@ void effacerEcran() {
 }
 
 void menu_acceuil() {
+    appliquer_theme_terminal(); // Ensure the theme is applied globally
     effacerEcran();
 
     afficherLigneSeparation();
@@ -55,6 +59,7 @@ void menu_acceuil() {
 }
 
 void afficherMenuPrincipal(int choix) {
+    appliquer_theme_terminal(); // Ensure the theme is applied globally
     effacerEcran();
     afficherLigneSeparation();
     afficherCentre("*** Menu principal ***");
@@ -64,7 +69,8 @@ void afficherMenuPrincipal(int choix) {
     afficherCentre(choix == 2 ? "-> 2. Creer un compte                          " : "   2. Creer un compte                          ");
     afficherCentre(choix == 3 ? "-> 3. Sudoku resolver                          " : "   3. Sudoku resolver                          ");
     afficherCentre(choix == 4 ? "-> 4. Contacter un administrateur              " : "   4. Contacter un administrateur              ");
-    afficherCentre(choix == 5 ? "-> 5. Quitter                                  " : "   5. Quitter                                  ");
+    afficherCentre(choix == 5 ? " -> 5. Thème                                    " : "    5. Thème                                    ");
+    afficherCentre(choix == 6 ? "-> 6. Quitter                                  " : "   6. Quitter                                  ");
     afficherLigneSeparation();
 }
 
@@ -81,7 +87,7 @@ void gerer_menu_acceuil() {
             if (touche == 72 && choix > 1) {
                 choix--;
                 afficherMenuPrincipal(choix);
-            } else if (touche == 80 && choix < 5) {
+            } else if (touche == 80 && choix < 6) {
                 choix++;
                 afficherMenuPrincipal(choix);
             }
@@ -106,6 +112,11 @@ void gerer_menu_acceuil() {
             contact_admin_menu();
             break;
         case 5:
+            changerTheme(); // Change the theme globally
+            gerer_menu_acceuil(); // Return to the main menu
+            break;
+        case 6:
+            resetThemeBeforeExit(); // Reset the theme to default before exiting
             exit(0);
     }
 }
@@ -358,4 +369,19 @@ void gerer_menu_niveau() {
             afficherCentre("Choix incorrect");
             break;
     }
+}
+
+extern int theme_blanc; // Declare the global variable from afficher.c
+extern void appliquer_theme_terminal(); // Declare the function to apply the theme
+
+void changerTheme() {
+    theme_blanc = !theme_blanc; // Toggle the theme
+    appliquer_theme_terminal(); // Apply the theme globally and clear the terminal
+    afficherCentre(theme_blanc ? "Thème changé: Fond blanc, texte noir." : "Thème changé: Thème par défaut.");
+    system("pause");
+}
+
+void resetThemeBeforeExit() {
+    theme_blanc = 0; // Reset to default theme (dark mode)
+    appliquer_theme_terminal(); // Apply the default theme
 }

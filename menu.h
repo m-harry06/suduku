@@ -9,5 +9,7 @@ void contact_admin_menu();
 int getLastId(const char *filename);
 void menu_niveau();
 void gerer_menu_niveau();
+void changerTheme();
+void resetThemeBeforeExit();
 
 #endif
