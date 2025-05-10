@@ -11,5 +11,7 @@ void menu_niveau();
 void gerer_menu_niveau();
 void changerTheme();
 void resetThemeBeforeExit();
+void Appliquer_Theme_Terminal();
+void Enable_Ansi_Support(void);
 
 #endif

@@ -5,22 +5,33 @@
 #include "main.h"
 
 // Définition de la variable globale
-char username[20] = ""; // Initialisez avec une chaîne vide ou une valeur par défaut
+char username[20] = ""; // Chaîne initialisée vide
 
-int main(){
+// Active les séquences ANSI pour le thème
+void activer_support_ANSI() {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD mode = 0;
+    GetConsoleMode(hOut, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, mode);
+}
 
+int main() {
+    // Affiche les caractères UTF-8 correctement
     SetConsoleOutputCP(CP_UTF8);
 
-    int user_choice_acceuil;
-    int user_choice_niveau;
-    char grille[9][9];
+    // Active les couleurs ANSI
+    activer_support_ANSI();
 
-    
-    gerer_menu_acceuil(user_choice_acceuil);
-    accueil:
-    gerer_menu_niveau(user_choice_niveau);
-    
+    // Lancement du menu principal (accueil)
+    gerer_menu_acceuil();  // plus besoin de passer de pointeur si c’est géré en interne
 
-    goto accueil;
+    niveau :
+    gerer_menu_niveau();
+
+    goto niveau ;
+    // Fin du programme : on peut réinitialiser le thème ici aussi au cas où
+    resetThemeBeforeExit();
+
     return 0;
 }

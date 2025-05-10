@@ -19,5 +19,6 @@ typedef struct Utilisateur
 }Utilisateur;
 
 int main();
+void activer_support_ANSI();
 
 #endif

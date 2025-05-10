@@ -3,6 +3,7 @@
 #include <string.h>
 #include <conio.h>
 #include <locale.h>
+#include <windows.h>
 
 #include "menu.h"
 #include "main.h"
@@ -100,6 +101,7 @@ void gerer_menu_acceuil() {
     switch (choix) {
         case 1:
             connecter_menu();
+            
             break;
         case 2:
             addNewPlayers();
@@ -372,16 +374,46 @@ void gerer_menu_niveau() {
 }
 
 extern int theme_blanc; // Declare the global variable from afficher.c
-extern void appliquer_theme_terminal(); // Declare the function to apply the theme
+//extern void appliquer_theme_terminal(); // Declare the function to apply the theme
+
+void Enable_Ansi_Support(void) {
+    // Active le support ANSI sur Windows 10+
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+}
+
+
+void Appliquer_Theme_Terminal() {
+    // Activer le support ANSI si nécessaire (Windows seulement)
+    #ifdef _WIN32
+    Enable_Ansi_Support();
+    #endif
+    
+    // Effacer l'écran d'abord
+    printf("\033[2J\033[H");
+    
+    if (theme_blanc) {
+        // Appliquer le thème blanc
+        printf("\033[47m\033[30m"); // fond blanc avec texte noir
+    } else {
+        // Réinitialiser au thème par défaut (sans forcer le fond noir ni le texte blanc)
+        printf("\033[0m");
+    }
+}
+
 
 void changerTheme() {
-    theme_blanc = !theme_blanc; // Toggle the theme
-    appliquer_theme_terminal(); // Apply the theme globally and clear the terminal
+    theme_blanc = !theme_blanc;
+    Appliquer_Theme_Terminal();
+    effacerEcran();
     afficherCentre(theme_blanc ? "Thème changé: Fond blanc, texte noir." : "Thème changé: Thème par défaut.");
     system("pause");
 }
 
 void resetThemeBeforeExit() {
-    theme_blanc = 0; // Reset to default theme (dark mode)
-    appliquer_theme_terminal(); // Apply the default theme
+    theme_blanc = 0;
+    appliquer_theme_terminal();
 }
