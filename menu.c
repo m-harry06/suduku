@@ -404,13 +404,12 @@ void Appliquer_Theme_Terminal() {
     }
 }
 
-
 void changerTheme() {
     theme_blanc = !theme_blanc;
     Appliquer_Theme_Terminal();
     effacerEcran();
-    afficherCentre(theme_blanc ? "Thème changé: Fond blanc, texte noir." : "Thème changé: Thème par défaut.");
-    system("pause");
+    //afficherCentre(theme_blanc ? "Thème changé: Fond blanc, texte noir." : "Thème changé: Thème par défaut.");
+    //system("pause");
 }
 
 void resetThemeBeforeExit() {
