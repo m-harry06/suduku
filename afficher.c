@@ -42,73 +42,74 @@ void afficher_grille(char grille[GRID_SIZE][GRID_SIZE], bool is_user_input[GRID_
     const char *reset = "\033[0m";
     const char *bg;
     const char *fixed;
-    const char *input = "\033[31m"; // rouge pour utilisateur (toujours)
+    const char *input = "\033[31m"; // rouge
     const char *border;
-    const char *cursor_fg = "\033[35m"; // violet pour curseur
+    const char *cursor_fg = "\033[35m"; // violet
 
     if (theme_blanc) {
-        bg = "\033[47m";      // fond blanc
-        fixed = "\033[30m";   // texte noir
-        border = "\033[30m";  // bordure noire
+        bg = "\033[47m";
+        fixed = "\033[30m";
+        border = "\033[30m";
     } else {
-        bg = "";              // fond par défaut terminal
-        fixed = "\033[37m";   // texte blanc
-        border = "\033[37m";  // bordure blanche
+        bg = "";
+        fixed = "\033[37m";
+        border = "\033[37m";
     }
 
-    const int largeur_texte = 27;
+    const int largeur_texte = 37; // Ajusté pour 9 chiffres + séparateurs
     int marge = marge_gauche(largeur_texte);
 
     // Bordure supérieure
     for (int i = 0; i < marge; i++) printf("%s %s", bg, bg);
-    printf("%s%s╔═══════════════════════╗%s\n", bg, border, reset);
+    printf("%s%s╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗%s\n", bg, border, reset);
 
     for (int i = 0; i < GRID_SIZE; i++) {
         for (int j = 0; j < marge; j++) printf("%s %s", bg, bg);
-        printf("%s%s║ %s", bg, border, bg);
+        printf("%s%s║", bg, border);
 
         for (int j = 0; j < GRID_SIZE; j++) {
             char c = grille[i][j];
 
+            printf(" ");
             if (i == cursor_row && j == cursor_col) {
-                // Curseur : juste texte rouge, pas de fond spécial
-                if (c == ' ') {
-                    printf("%s%s-%s ", bg, cursor_fg, bg);
-                } else if (is_user_input[i][j]) {
-                    printf("%s%s%c%s ", bg, input, c, bg);
-                } else {
-                    printf("%s%s%c%s ", bg, cursor_fg, c, bg);
-                }
+                if (c == ' ') printf("%s%s-%s", bg, cursor_fg, bg);
+                else if (is_user_input[i][j]) printf("%s%s%c%s", bg, input, c, bg);
+                else printf("%s%s%c%s", bg, cursor_fg, c, bg);
             } else if (c == ' ') {
-                printf("%s  %s", bg, bg);
+                printf(" ");
             } else if (is_user_input[i][j]) {
-                printf("%s%s%c%s ", bg, input, c, bg);
+                printf("%s%s%c%s", bg, input, c, bg);
             } else {
-                printf("%s%s%c%s ", bg, fixed, c, bg);
+                printf("%s%s%c%s", bg, fixed, c, bg);
             }
+            printf(" ");
 
-            if ((j + 1) % 3 == 0)
-                printf("%s%s║ %s", bg, border, bg);
+            // Barres verticales
+            if (j == 2 || j == 5) printf("%s│", border);
+            else if (j != 8) printf("%s│", border);
         }
 
-        printf("%s\n", reset);
+        printf("%s║%s\n", border, reset);
 
-        if ((i + 1) % 3 == 0 && i != GRID_SIZE - 1) {
+        // Barres horizontales
+        if (i == 2 || i == 5) {
             for (int j = 0; j < marge; j++) printf("%s %s", bg, bg);
-            printf("%s%s╠═══════════════════════╣%s\n", bg, border, reset);
+            printf("%s%s╟───┼───┼───╫───┼───┼───╫───┼───┼───╢%s\n", bg, border, reset);
+        } else if (i != 8) {
+            for (int j = 0; j < marge; j++) printf("%s %s", bg, bg);
+            printf("%s%s╟───┼───┼───┼───┼───┼───┼───┼───┼───╢%s\n", bg, border, reset);
         }
     }
 
     // Bordure inférieure
     for (int i = 0; i < marge; i++) printf("%s %s", bg, bg);
-    printf("%s%s╚═══════════════════════╝%s\n", bg, border, reset);
+    printf("%s%s╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝%s\n", bg, border, reset);
 
-    // Affichage position curseur
+    // Info curseur
     printf("\n");
     for (int i = 0; i < marge; i++) printf("%s %s", bg, bg);
     printf("%s%sPosition du curseur: Ligne %d, Colonne %d%s\n",
            bg, border, cursor_row + 1, cursor_col + 1, reset);
-           
-    // Effacer complètement le thème à la fin
+
     printf("%s", reset);
 }

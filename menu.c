@@ -12,6 +12,7 @@
 #include "affichageCentrer.h"
 #include "sauvegarde.h"
 #include "afficher.h"
+#include "pictureSolver.h"
 
 
 
@@ -107,8 +108,7 @@ void gerer_menu_acceuil() {
             addNewPlayers();
             break;
         case 3:
-            afficherCentre("Fonctionnalité Sudoku resolver non implémentée.");
-            system("pause");
+            executer_recognize_sudoku();
             break;
         case 4:
             contact_admin_menu();

@@ -13,5 +13,6 @@ void changerTheme();
 void resetThemeBeforeExit();
 void Appliquer_Theme_Terminal();
 void Enable_Ansi_Support(void);
-
+void effacerEcran();
+void afficherLigneSeparation();
 #endif
