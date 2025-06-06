@@ -30,6 +30,7 @@ void afficherRetourMenuPrincipal() {
             while (getchar() != '\n'); // Nettoyer le buffer
         }
     } while (choix != 1);
+    main();
 }
 
 void masquerCurseur() {

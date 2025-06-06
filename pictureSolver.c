@@ -6,6 +6,7 @@
 #include "generer.h"
 #include "menu.h"
 #include "affichageCentrer.h"
+#include "main.h"
 
 #define GRID_SIZE 9
 
@@ -80,6 +81,7 @@ void executer_recognize_sudoku() {
     if (fgets(image_path, sizeof(image_path), stdin) == NULL) {
         afficherCentre("Erreur de lecture du chemin.");
         system("pause");
+        main();
         return;
     }
     
@@ -91,6 +93,7 @@ void executer_recognize_sudoku() {
     if (file_check == NULL) {
         afficherCentre("Erreur: Fichier introuvable ou inaccessible.");
         system("pause");
+        main();
         return;
     }
     fclose(file_check);
@@ -128,11 +131,14 @@ void executer_recognize_sudoku() {
         fclose(csv_file);
         afficherCentre("Grille chargee avec succes!");
         system("pause");
-        jouer_sudoku(grid);  // Lancer le jeu avec la grille détectée
+        jouer_sudoku(grid);
+        system("pause");
+        main();  // Lancer le jeu avec la grille détectée
     } else {
         fclose(csv_file);
         afficherCentre("Erreur: Format du CSV invalide.");
         system("pause");
+        main();
     }
 }
 

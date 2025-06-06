@@ -22,13 +22,15 @@ int main() {
 
     // Active les couleurs ANSI
     activer_support_ANSI();
+
     
-    niveau :
     // Lancement du menu principal (accueil)
     gerer_menu_acceuil();  // plus besoin de passer de pointeur si c’est géré en interne
+
+    debut:
     gerer_menu_niveau();
 
-    goto niveau ;
+    goto debut ;
     // Fin du programme : on peut réinitialiser le thème ici aussi au cas où
     resetThemeBeforeExit();
 
